@@ -6,7 +6,7 @@ import Jimp = require('jimp');
 // returns the absolute path to the local image
 // INPUTS
 //    inputURL: string - a publicly accessible url to an image file
-// RETURNS
+// RETURNs 
 //    an absolute path to a filtered image locally saved file
 export async function filterImageFromURL(inputURL: string): Promise<string>{
     return new Promise( async resolve => {
