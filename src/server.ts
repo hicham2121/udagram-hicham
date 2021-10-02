@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { response } from 'express';
 import bodyParser from 'body-parser';
 import {filterImageFromURL, deleteLocalFiles} from './util/util';
 
@@ -30,6 +30,39 @@ import {filterImageFromURL, deleteLocalFiles} from './util/util';
   /**************************************************************************** */
 
   //! END @TODO1
+
+  app.get( "/filteredimage", async ( req, res ) => {
+    try{
+
+      //get the url from the query
+      const image_url = req.query.image_url;
+
+      if (!image_url) {
+        return res.status(404).send({message: 'no valide url, '});
+      }
+      console.log("======== image_url ==========");
+      console.log(image_url);
+
+      const resultFiltredmagePath = await filterImageFromURL(image_url);
+
+      console.log("======= resultFiltredmagePath =======");
+      console.log(resultFiltredmagePath);
+
+      res.sendFile(resultFiltredmagePath,  (err)=> {
+        if (err) {
+          res.status(422).send(err.message);
+            
+        }  
+    });
+
+
+
+    } catch(error){
+      console.log("========= getUrl error =======");
+      // res.status(422).send(error.message);
+    }
+     
+  } );
   
   // Root Endpoint
   // Displays a simple message to the user
