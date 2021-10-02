@@ -32,10 +32,12 @@ import {filterImageFromURL, deleteLocalFiles} from './util/util';
   //! END @TODO1
 
   app.get( "/filteredimage", async ( req, res ) => {
-    try{
+    
 
       //get the url from the query
       const image_url = req.query.image_url;
+
+      // 1. validate the image_url query
 
       if (!image_url) {
         return res.status(404).send({message: 'no valide url, '});
@@ -43,24 +45,36 @@ import {filterImageFromURL, deleteLocalFiles} from './util/util';
       console.log("======== image_url ==========");
       console.log(image_url);
 
+
+      // 2. call filterImageFromURL(image_url) to filter the image
+
       const resultFiltredmagePath = await filterImageFromURL(image_url);
 
       console.log("======= resultFiltredmagePath =======");
       console.log(resultFiltredmagePath);
 
+      // 3. send the resulting file in the response
+       
+
       res.sendFile(resultFiltredmagePath,  (err)=> {
-        if (err) {
-          res.status(422).send(err.message);
-            
+
+        // 4. deletes any files on the server on finish of the response
+         deleteLocalFiles([resultFiltredmagePath]);
+
+        if (err) {  
+
+          //no such file or directory,
+
+          res.status(400).send(err.message);
         }  
     });
 
+    // try{
 
-
-    } catch(error){
-      console.log("========= getUrl error =======");
-      // res.status(422).send(error.message);
-    }
+    // } catch(error){
+    //   console.log("========= getUrl error =======");
+    //   // res.status(422).send(error.message);
+    // }
      
   } );
   
