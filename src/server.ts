@@ -1,6 +1,9 @@
 import express, { response } from 'express';
 import bodyParser from 'body-parser';
-import {filterImageFromURL, deleteLocalFiles} from './util/util';
+import {filterImageFromURL, deleteLocalFiles, filterImageFromURLWithMethod } from './util/util';
+import { nextTick } from 'process';
+import { Router, Request, Response } from 'express';
+
 
 (async () => {
 
@@ -14,7 +17,12 @@ import {filterImageFromURL, deleteLocalFiles} from './util/util';
   app.use(bodyParser.json());
 
   
+ 
+
+  
   app.get( "/filteredimage", async ( req, res ) => {
+
+    console.log("============= default 1============== ");
     
 
       //get the url from the query
@@ -22,22 +30,26 @@ import {filterImageFromURL, deleteLocalFiles} from './util/util';
 
       // 1. validate the image_url query
       if (!image_url) {
-        return res.status(404).send({message: 'no valide url, '});
+        return res.status(404).send({message: 'no valide image url, '});
       }
       console.log("======== image_url ==========");
       console.log(image_url);
 
-
+      let  resultFiltredmagePath : string;
       // 2. call filterImageFromURL(image_url) to filter the image
-      const resultFiltredmagePath = await filterImageFromURL(image_url);
+      try{
+        resultFiltredmagePath = await filterImageFromURL(image_url);
+        console.log("======= resultFiltredmagePath =======");
+        console.log(resultFiltredmagePath);
 
-      
-      console.log("======= resultFiltredmagePath =======");
-      console.log(resultFiltredmagePath);
+      }catch(error){
 
-      // 3. send the resulting file in the response
-       
+        return res.status(415).send({message: error});
 
+
+      }
+
+      // 3. send the resulting file in the response       
       res.sendFile(resultFiltredmagePath,  (err)=> {
 
         // 4. deletes any files on the server on finish of the response
@@ -51,10 +63,12 @@ import {filterImageFromURL, deleteLocalFiles} from './util/util';
         }  
     });
 
-    
+ 
      
   } );
+
   
+
   // Root Endpoint
   // Displays a simple message to the user
   app.get( "/", async ( req, res ) => {
