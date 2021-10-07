@@ -2,7 +2,6 @@ import express, { NextFunction, Router, Request, Response } from "express";
 import bodyParser from "body-parser";
 import { filterImageFromURL, deleteLocalFiles } from "./util/util";
 
-
 (async () => {
   // Init the Express application
   const app = express();
